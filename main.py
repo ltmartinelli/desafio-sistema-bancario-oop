@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 
 class Conta:
-    def __init__(self, saldo, numero, cliente):
+    def __init__(self, numero, cliente):
         self._saldo = 0.0
         self._numero = numero
         self._agencia = '0001'
@@ -12,7 +12,7 @@ class Conta:
         self._historico = Historico()
 
     @classmethod
-    def nova_conta(cls, numero, cliente):
+    def nova_conta(cls, cliente, numero):
         return cls(numero, cliente)
 
     @property
@@ -92,7 +92,7 @@ Titular:\t{self.cliente.nome}
 
 class Cliente():
 
-    def __init__(self, endereco, contas):
+    def __init__(self, endereco):
         self.endereco = endereco
         self.contas = []
 
@@ -114,7 +114,7 @@ class PessoaFisica(Cliente):
 
 class Historico():
     def __init__(self):
-        self.transacoes = []
+        self._transacoes = []
 
     @property
     def transacoes(self):
@@ -167,7 +167,8 @@ class Saque(Transacao):
         if conta.sacar(self.valor):
             conta.historico.adicionar_transacao(self)
 
-def main():
+
+def menu():
     menu = """
 \n
 ================ MENU ================
@@ -179,6 +180,93 @@ def main():
 [nu]Novo usuário
 [q]Sair
 => """
+    return menu
+
+
+def procurar_cliente(cpf, clientes):
+    for cliente in clientes:
+        if cliente.cpf == cpf:
+            return cliente
+        else:
+            return None
+
+
+def recuperar_conta_cliente(cliente, numero):
+    if not cliente.contas:
+        print('\nSem contas associadas a este cliente!')
+        return
+    else:
+        conta = [cc for cc in cliente.contas if cc.numero == numero]
+        if not conta:
+            print("Conta inexistente, verifique o número da conta.")
+        else:
+            return conta[0]
+
+
+def listar_contas(contas):
+    if not contas:
+        print("Não existem contas no sistema.")
+    else:
+        for conta in contas:
+            print('#' * 100)
+            print(conta)
+
+
+def criar_usuario(clientes):
+    print("Insira os dados de cadastro:")
+    cpf = input("CPF: ")
+    cliente = procurar_cliente(cpf, clientes)
+    if cliente:
+        print("CPF já cadastrado!")
+        return
+
+    nome = input("Nome: ")
+    endereco = input("Endereço (logradouro, nro - bairro - cidade/sigla estado): ")
+    data_nascimento = input("Data de Nascimento (dd/mm/aaaa): ")
+
+    cliente = PessoaFisica(nome=nome, data_nascimento=data_nascimento, cpf=cpf, endereco=endereco)
+    clientes.append(cliente)
+    print("\n Cliente cadastrado com sucesso!")
+
+
+def criar_conta(clientes, contas):
+    cpf = input("CPF do cliente: ")
+    cliente = procurar_cliente(cpf, clientes)
+
+    if not cliente:
+        print("\nCliente não encontrado!")
+        return
+
+    numero = len(contas)+1
+    conta = ContaCorrente.nova_conta(cliente=cliente,numero=numero)
+    contas.append(conta)
+    print("\nConta criada com sucesso!")
+
+
+def main():
+    clientes = []
+    contas = []
+
+    while True:
+
+        opcao = input(menu())
+
+        if opcao == 'd':
+            pass
+        elif opcao == 's':
+            pass
+        elif opcao == 'e':
+            pass
+        elif opcao == 'nc':
+            criar_conta(clientes,contas)
+        elif opcao == 'lc':
+            listar_contas(contas)
+        elif opcao == 'nu':
+            criar_usuario(clientes)
+        elif opcao == 'q':
+            break
+        else:
+            print('\nOpção inválida!')
+
 
 main()
-
