@@ -75,13 +75,12 @@ class ContaCorrente(Conta):
 
         if numero_saques >= self._limite_saques:
             print("Limite diário de saques atingidos!")
-            return False
         elif valor > self._limite:
             print("Limite para saques é de R$ 500!")
-            return False
         else:
-            super().sacar(valor)
-            return True
+            return super().sacar(valor)
+
+        return False
 
 
     def __str__(self):
